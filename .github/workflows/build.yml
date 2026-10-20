@@ -1,0 +1,27 @@
+name: Build e Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    # Roda no agente local (runner self-hosted na maquina do nginx, Linux)
+    runs-on: [self-hosted, linux]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: bash build.sh
+
+      - name: Guardar resultado do build
+        uses: actions/upload-artifact@v4
+        with:
+          name: super-coxinha-dist
+          path: dist/
+
+      # Deploy so acontece em push na main (nunca em pull request)
+      - name: Deploy no nginx
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: rsync -a --delete dist/ /var/www/html/
