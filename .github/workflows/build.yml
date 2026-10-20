@@ -24,4 +24,4 @@ jobs:
       # Deploy so acontece em push na main (nunca em pull request)
       - name: Deploy no nginx
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: rsync -a --delete dist/ /var/www/html/
+        run: rsync -rt --delete dist/ /var/www/html/
